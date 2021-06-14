@@ -2,6 +2,7 @@ package est.una.ac.cr.nonavegable.view.ui.buscarvuelos
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
@@ -17,10 +18,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import est.una.ac.cr.nonavegable.R
+import est.una.ac.cr.nonavegable.controllers.MainActivity
 import est.una.ac.cr.nonavegable.databinding.BuscarVueloFragmentBinding
 import est.una.ac.cr.nonavegable.model.Model
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
 import est.una.ac.cr.nonavegable.view.ui.checkInVuelo.CheckInVueloFragment
+import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
+import est.una.ac.cr.nonavegable.view.ui.vuelosregreso.VuelosRegresoFragment
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -32,6 +36,7 @@ class BuscarVuelo : Fragment() {
     }
 
     private lateinit var viewModel: BuscarVueloViewModel
+
     private var _binding: BuscarVueloFragmentBinding? = null
 
     private val binding get() = _binding!!
@@ -49,14 +54,32 @@ class BuscarVuelo : Fragment() {
         cargarVuelos(root.context,binding)
 
         val origen: TextInputLayout = binding.textOrigen
+        origen.editText?.setText(viewModel.origen.value)
+        origen.editText?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            viewModel.setOrigen(origen.editText?.text.toString())
+            true})
         val destino: TextInputLayout = binding.textDestino
+        destino.editText?.setText(viewModel.destino.value)
+        destino.editText?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            viewModel.setDestino(destino.editText?.text.toString())
+            true
+        })
         val fechPartida: TextInputLayout = binding.textFechPartida
+        fechPartida.editText?.setText(viewModel.fechaPart.value)
+        fechPartida.editText?.setText(viewModel.fechaPart.value)
         val fechRegreso:TextInputLayout = binding.textFechRegreso
+        fechRegreso.editText?.setText(viewModel.fechaReg.value)
         val cantidadAsientos:TextInputLayout= binding.textCantidadAsientos
-        val soloIda: CheckBox =binding.checkSoloIda
-        val buscar: Button =binding.btnBuscar
-        var picker: DatePickerDialog
-        fechPartida.editText?.inputType= InputType.TYPE_NULL
+        /*cantidadAsientos.editText?.setText(viewModel.cantidadPas.value.toString())
+        cantidadAsientos.editText?.setOnKeyListener { v, keyCode, event ->
+            viewModel.setCantidadPas(cantidadAsientos.editText?.text.toString())
+            true
+        }*/
+        val soloIda:CheckBox=binding.checkSoloIda
+        soloIda.isActivated= viewModel.soloIda.value == true
+        val buscar:Button=binding.btnBuscar
+        var picker:DatePickerDialog
+        fechPartida.editText?.inputType=InputType.TYPE_NULL
         fechRegreso.editText?.inputType=InputType.TYPE_NULL
         fechPartida.editText?.setOnClickListener(
             View.OnClickListener {
@@ -66,7 +89,9 @@ class BuscarVuelo : Fragment() {
                 val year: Int = cldr.get(Calendar.YEAR)
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
-                    { view, year, monthOfYear, dayOfMonth -> fechPartida.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) },
+                    { view, year, monthOfYear, dayOfMonth ->
+                        fechPartida.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        viewModel.setFechPart(fechPartida.editText?.text.toString())},
                     year,
                     month,
                     day
@@ -81,7 +106,9 @@ class BuscarVuelo : Fragment() {
                 val year: Int = cldr.get(Calendar.YEAR)
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
-                    { view, year, monthOfYear, dayOfMonth -> fechRegreso.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) },
+                    { view, year, monthOfYear, dayOfMonth ->
+                        fechRegreso.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        viewModel.setfechRegreso(fechRegreso.editText?.text.toString())},
                     year,
                     month,
                     day
@@ -93,16 +120,29 @@ class BuscarVuelo : Fragment() {
             if(!soloIda.isActivated){
                 fechRegreso.visibility=View.GONE
                 soloIda.isActivated=true
+                viewModel.setSoloIda(soloIda.isActivated)
             }else if(soloIda.isActivated){
                 fechRegreso.visibility=View.VISIBLE
                 soloIda.isActivated=false
+                viewModel.setSoloIda(soloIda.isActivated)
             }
         })
         buscar.setOnClickListener(View.OnClickListener {
-            /*var i = Intent(context,VuelosIdaFragment::class.java)
-            i.putExtra("SoloIda",soloIda.isActivated)*/
+            //var i = Intent(context,MainActivity::class.java)
+            var b = Bundle()
+            b.putBoolean("SoloIda",soloIda.isActivated)
+            b.putString("Origen",origen.editText?.text.toString())
+            b.putString("Destino",destino.editText?.text.toString())
+            b.putString("Fecha_partida",fechPartida.editText?.text.toString())
+            b.putInt("Cantidad",cantidadAsientos.editText?.text.toString().toInt())
+            if(soloIda.isActivated)
+                b.putString("Fecha_regreso",fechRegreso.editText?.text.toString())
+
+
             //TareaAsigcronica
-            var vuelosIdaFragment: CheckInVueloFragment = CheckInVueloFragment()
+
+            var vuelosIdaFragment: VuelosIdaFragment = VuelosIdaFragment()
+            vuelosIdaFragment.arguments=b
             var fragmenmanager: FragmentManager? = parentFragmentManager
             var fragTransaction: FragmentTransaction?=fragmenmanager?.beginTransaction()
 

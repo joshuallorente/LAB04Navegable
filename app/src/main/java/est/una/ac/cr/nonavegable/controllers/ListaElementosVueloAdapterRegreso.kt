@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +14,15 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
-import est.una.ac.cr.nonavegable.view.ui.buscarvuelos.BuscarVuelo
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
+import est.una.ac.cr.nonavegable.view.ui.vuelosregreso.VuelosRegresoFragment
 
-class ListaElementosVueloAdapter(
+class ListaElementosVueloAdapterRegreso(
     private var mData: List<Vuelo>,
     private val mInflater: LayoutInflater,
     private val context: Context
 ) :
-    RecyclerView.Adapter<ListaElementosVueloAdapter.ViewHolder>() {
+    RecyclerView.Adapter<ListaElementosVueloAdapterRegreso.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = mInflater.inflate(R.layout.recycle_item_template, null)
         return ViewHolder(view)
@@ -33,12 +32,10 @@ class ListaElementosVueloAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindData(mData[position])
-
         var item=mData.get(position)
         holder.itemView.setOnClickListener(View.OnClickListener {
             holder.itemView.setBackgroundColor(Color.GREEN)
-            Log.println(Log.DEBUG,"Debug",item.toString())
-            seleccionado=item
+            seleccionado = item
         })
     }
 

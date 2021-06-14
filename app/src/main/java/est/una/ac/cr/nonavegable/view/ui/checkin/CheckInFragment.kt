@@ -4,22 +4,17 @@ import android.app.ActionBar
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.Layout
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import est.una.ac.cr.nonavegable.R
-import est.una.ac.cr.nonavegable.databinding.BuscarVueloFragmentBinding
 import est.una.ac.cr.nonavegable.databinding.CheckInFragmentBinding
-import est.una.ac.cr.nonavegable.view.ui.buscarvuelos.BuscarVueloViewModel
-import org.w3c.dom.Text
 
 class CheckInFragment : Fragment() {
 
@@ -31,10 +26,9 @@ class CheckInFragment : Fragment() {
     private var _binding: CheckInFragmentBinding? = null
 
     private val binding get() = _binding!!
-
+    val AsientosLayout: HashMap<String, TextView> = HashMap()
     private var filas = 20
     private var columnas = 7
-
     var cantidad = 2
 
     override fun onCreateView(
@@ -44,6 +38,7 @@ class CheckInFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this).get(CheckInViewModel::class.java)
         _binding = CheckInFragmentBinding.inflate(inflater,container,false)
+
         val root:View = binding.root
 
         var layout = binding.scrollviewHorizontal as HorizontalScrollView
@@ -79,11 +74,33 @@ class CheckInFragment : Fragment() {
                 }else if(columnas==9&&(j==4||j==7)){
                     layoutt.addView(generarEspacio(root.context,layoutParams))
                 }
-
-                layoutt.addView(crearAsiento(i,j,root.context,layoutParams))
+                var temp:TextView=crearAsiento(i,j,root.context,layoutParams)
+                    if(viewModel.map.get(Char(j+64)+"$i")!=null){
+                        temp.setOnClickListener(null)
+                        temp.tag="Reservado"
+                        temp.setBackgroundResource(R.drawable.ic_seat_reservado)
+                    }
+                AsientosLayout.put(Char(j+64)+"$i",temp)
+                layoutt.addView(temp)
 
             }
         }
+
+        val layoutt = LinearLayout(root.context)
+        layoutt.orientation = LinearLayout.HORIZONTAL
+        var button = Button(root.context)
+        button.text= "Seleccionar"
+        val layoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+        button.layoutParams=layoutParams
+        button.setOnClickListener(View.OnClickListener {
+            Toast.makeText(root.context,"Asientos seleccionados",Toast.LENGTH_LONG).show()
+            var p = parentFragmentManager
+            for(i in 1..p.backStackEntryCount){
+                p.popBackStack()
+            }
+        })
+        layoutt.addView(button)
+        layoutSeat.addView(layoutt)
 
         layout.addView(layoutSeat)
 

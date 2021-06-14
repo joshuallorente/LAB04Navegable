@@ -12,24 +12,9 @@
         tools:layout="@layout/buscar_vuelo_fragment" />
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="est.una.ac.cr.nonavegable.view.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" >
-    </fragment>
+        android:id="@+id/nav_check_in_vuelo"
+        android:name="est.una.ac.cr.nonavegable.view.ui.checkInVuelo.CheckInVueloFragment"
+        android:label="Check-In"
+        tools:layout="@layout/check_in_vuelo_fragment" />
 
-    <fragment
-        android:id="@+id/nav_gallery"
-        android:name="est.una.ac.cr.nonavegable.view.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" >
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="est.una.ac.cr.nonavegable.view.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" >
-    </fragment>
 </navigation>

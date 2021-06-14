@@ -3,29 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ui.vuelosida.VuelosIdaFragment"
+    tools:context=".view.ui.vuelosregreso.VuelosRegresoFragment"
     android:orientation="vertical">
 
-
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:gravity="center_horizontal"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:text="Seleccione un Vuelo" />
-
-    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragment_view_recycle_vuelos_ida">
+        android:text="Seleccione un vuelo"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler_vuelos_regreso"/>
+    </ScrollView>
 
     <Button
-        android:id="@+id/button_seleccionar_ida"
+        android:id="@+id/button_seleccionar_regreso"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Seleccionar" />
+
 </LinearLayout>
