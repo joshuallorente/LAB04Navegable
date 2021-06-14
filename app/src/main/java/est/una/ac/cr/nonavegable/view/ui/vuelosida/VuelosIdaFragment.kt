@@ -20,7 +20,7 @@ class VuelosIdaFragment : Fragment() {
         fun newInstance() = VuelosIdaFragment()
     }
     private lateinit var viewModel: VuelosIdaViewModel
-
+    lateinit var recycle:RecyclerView
     private var _binding:VuelosIdaFragmentBinding?=null
     private  val binding get() = _binding!!
 
@@ -31,7 +31,7 @@ class VuelosIdaFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this).get(VuelosIdaViewModel::class.java)
         _binding = VuelosIdaFragmentBinding.inflate(inflater,container,false)
-        var recycle=binding.fragmentViewRecycleVuelosIda
+        recycle=binding.fragmentViewRecycleVuelosIda
         recycle.layoutManager=LinearLayoutManager(recycle.context)
         recycle.setHasFixedSize(true)
         var adapter:ListaElementosVueloAdapter

@@ -16,6 +16,7 @@ import android.widget.CompoundButton
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.google.android.material.textfield.TextInputLayout
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.databinding.BuscarVueloFragmentBinding
@@ -46,11 +47,29 @@ class BuscarVuelo : Fragment() {
         val root:View = binding.root
 
         val origen: TextInputLayout = binding.textOrigen
+        origen.editText?.setText(viewModel.origen.value)
+        origen.editText?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            viewModel.setOrigen(origen.editText?.text.toString())
+            true})
         val destino: TextInputLayout = binding.textDestino
+        destino.editText?.setText(viewModel.destino.value)
+        destino.editText?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            viewModel.setDestino(destino.editText?.text.toString())
+            true
+        })
         val fechPartida: TextInputLayout = binding.textFechPartida
+        fechPartida.editText?.setText(viewModel.fechaPart.value)
+        fechPartida.editText?.setText(viewModel.fechaPart.value)
         val fechRegreso:TextInputLayout = binding.textFechRegreso
+        fechRegreso.editText?.setText(viewModel.fechaReg.value)
         val cantidadAsientos:TextInputLayout= binding.textCantidadAsientos
+        /*cantidadAsientos.editText?.setText(viewModel.cantidadPas.value.toString())
+        cantidadAsientos.editText?.setOnKeyListener { v, keyCode, event ->
+            viewModel.setCantidadPas(cantidadAsientos.editText?.text.toString())
+            true
+        }*/
         val soloIda:CheckBox=binding.checkSoloIda
+        soloIda.isActivated= viewModel.soloIda.value == true
         val buscar:Button=binding.btnBuscar
         var picker:DatePickerDialog
         fechPartida.editText?.inputType=InputType.TYPE_NULL
@@ -63,7 +82,9 @@ class BuscarVuelo : Fragment() {
                 val year: Int = cldr.get(Calendar.YEAR)
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
-                    { view, year, monthOfYear, dayOfMonth -> fechPartida.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) },
+                    { view, year, monthOfYear, dayOfMonth ->
+                        fechPartida.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        viewModel.setFechPart(fechPartida.editText?.text.toString())},
                     year,
                     month,
                     day
@@ -78,7 +99,9 @@ class BuscarVuelo : Fragment() {
                 val year: Int = cldr.get(Calendar.YEAR)
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
-                    { view, year, monthOfYear, dayOfMonth -> fechRegreso.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) },
+                    { view, year, monthOfYear, dayOfMonth ->
+                        fechRegreso.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        viewModel.setfechRegreso(fechRegreso.editText?.text.toString())},
                     year,
                     month,
                     day
@@ -90,16 +113,18 @@ class BuscarVuelo : Fragment() {
             if(!soloIda.isActivated){
                 fechRegreso.visibility=View.GONE
                 soloIda.isActivated=true
+                viewModel.setSoloIda(soloIda.isActivated)
             }else if(soloIda.isActivated){
                 fechRegreso.visibility=View.VISIBLE
                 soloIda.isActivated=false
+                viewModel.setSoloIda(soloIda.isActivated)
             }
         })
         buscar.setOnClickListener(View.OnClickListener {
             /*var i = Intent(context,VuelosIdaFragment::class.java)
             i.putExtra("SoloIda",soloIda.isActivated)*/
             //TareaAsigcronica
-            var vuelosIdaFragment:CheckInVueloFragment = CheckInVueloFragment()
+            var vuelosIdaFragment:CheckInFragment = CheckInFragment()
             var fragmenmanager: FragmentManager? = parentFragmentManager
             var fragTransaction:FragmentTransaction?=fragmenmanager?.beginTransaction()
 

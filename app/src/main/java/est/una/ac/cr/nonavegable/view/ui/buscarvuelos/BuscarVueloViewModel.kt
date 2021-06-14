@@ -5,24 +5,67 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class BuscarVueloViewModel : ViewModel() {
-    private val _origen = MutableLiveData<String>().apply {
+    private var _origen = MutableLiveData<String>().apply {
         value = ""
     }
-    private val _destino = MutableLiveData<String>().apply {
+     private var _destino = MutableLiveData<String>().apply {
         value = ""
     }
-    private val _fechaPart = MutableLiveData<String>().apply {
+    private var _fechaPart = MutableLiveData<String>().apply {
         value = ""
     }
-    private val _fechaReg = MutableLiveData<String>().apply {
+    private var _fechaReg = MutableLiveData<String>().apply {
         value = ""
     }
-    private val _cantidadPas = MutableLiveData<String>().apply {
+    private var _cantidadPas = MutableLiveData<String>().apply {
         value = ""
     }
-    val origen: LiveData<String> = _origen
-    val destino: LiveData<String> = _destino
-    val fechaPart: LiveData<String> = _fechaPart
-    val fechaReg: LiveData<String> = _fechaReg
-    val cantidadPas: LiveData<String> = _cantidadPas
+
+    private var _soloIda = MutableLiveData<Boolean>().apply {
+        value=false
+    }
+    fun setOrigen(text:String){
+        _origen=MutableLiveData<String>().apply {
+            value=text
+        }
+        origen=_origen
+    }
+    fun setFechPart(text:String){
+        _fechaPart=MutableLiveData<String>().apply {
+            value=text
+        }
+        fechaPart=_fechaPart
+    }
+
+    fun setDestino(text:String){
+        _destino=MutableLiveData<String>().apply {
+            value=text
+        }
+        destino=_destino
+    }
+    fun setCantidadPas(text:String){
+        _cantidadPas=MutableLiveData<String>().apply {
+            value=text
+        }
+        cantidadPas=_cantidadPas
+    }
+    fun setSoloIda(valor:Boolean){
+        _soloIda=MutableLiveData<Boolean>().apply {
+            value=valor
+        }
+        soloIda=_soloIda
+    }
+    fun setfechRegreso(text:String){
+        _fechaReg = MutableLiveData<String>().apply {
+            value=text
+        }
+        fechaReg=_fechaReg
+    }
+
+    var origen: LiveData<String> = _origen
+    var destino: LiveData<String> = _destino
+    var fechaPart: LiveData<String> = _fechaPart
+    var fechaReg: LiveData<String> = _fechaReg
+    var cantidadPas: LiveData<String> = _cantidadPas
+    var soloIda:LiveData<Boolean> =_soloIda
 }
