@@ -10,7 +10,7 @@ class Vuelo(
     var cantidad_pasajeros:Int=-1,
     var fecha_despegue:String?=null,
     var ruta_id: Int =-1,
-    var avion_id:Int =-1,
+    var avion_id:String?=null,
     var ruta:Ruta?=null
 ):Serializable {
     override fun toString(): String {

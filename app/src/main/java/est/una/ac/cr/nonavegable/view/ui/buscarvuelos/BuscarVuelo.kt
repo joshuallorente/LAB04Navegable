@@ -1,29 +1,29 @@
 package est.una.ac.cr.nonavegable.view.ui.buscarvuelos
 
 import android.app.DatePickerDialog
-import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.CompoundButton
+import android.widget.MultiAutoCompleteTextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.databinding.BuscarVueloFragmentBinding
+import est.una.ac.cr.nonavegable.model.Model
+import est.una.ac.cr.nonavegable.model.entities.Vuelo
 import est.una.ac.cr.nonavegable.view.ui.checkInVuelo.CheckInVueloFragment
-import est.una.ac.cr.nonavegable.view.ui.checkin.CheckInFragment
-import est.una.ac.cr.nonavegable.view.ui.checkout.CheckOutFragment
-import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import java.util.*
+import kotlin.collections.ArrayList
+
 
 class BuscarVuelo : Fragment() {
 
@@ -45,15 +45,18 @@ class BuscarVuelo : Fragment() {
         _binding = BuscarVueloFragmentBinding.inflate(inflater,container,false)
         val root:View = binding.root
 
+        Model.instance.init()
+        cargarVuelos(root.context,binding)
+
         val origen: TextInputLayout = binding.textOrigen
         val destino: TextInputLayout = binding.textDestino
         val fechPartida: TextInputLayout = binding.textFechPartida
         val fechRegreso:TextInputLayout = binding.textFechRegreso
         val cantidadAsientos:TextInputLayout= binding.textCantidadAsientos
-        val soloIda:CheckBox=binding.checkSoloIda
-        val buscar:Button=binding.btnBuscar
-        var picker:DatePickerDialog
-        fechPartida.editText?.inputType=InputType.TYPE_NULL
+        val soloIda: CheckBox =binding.checkSoloIda
+        val buscar: Button =binding.btnBuscar
+        var picker: DatePickerDialog
+        fechPartida.editText?.inputType= InputType.TYPE_NULL
         fechRegreso.editText?.inputType=InputType.TYPE_NULL
         fechPartida.editText?.setOnClickListener(
             View.OnClickListener {
@@ -99,9 +102,9 @@ class BuscarVuelo : Fragment() {
             /*var i = Intent(context,VuelosIdaFragment::class.java)
             i.putExtra("SoloIda",soloIda.isActivated)*/
             //TareaAsigcronica
-            var vuelosIdaFragment:CheckInVueloFragment = CheckInVueloFragment()
+            var vuelosIdaFragment: CheckInVueloFragment = CheckInVueloFragment()
             var fragmenmanager: FragmentManager? = parentFragmentManager
-            var fragTransaction:FragmentTransaction?=fragmenmanager?.beginTransaction()
+            var fragTransaction: FragmentTransaction?=fragmenmanager?.beginTransaction()
 
             fragTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             fragTransaction?.replace(R.id.nav_host_fragment_content_main,vuelosIdaFragment)
@@ -120,6 +123,32 @@ class BuscarVuelo : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    fun cargarVuelos(context: Context, binding:BuscarVueloFragmentBinding){
+        var vuelos : ArrayList<Vuelo> = Model.instance.listaVuelo
+
+        var origenes : ArrayList<String> = ArrayList()
+        var destinos : ArrayList<String> = ArrayList()
+
+        for(vuelo in vuelos){
+            if(origenes.find {it -> it == vuelo.origen.toString()}==null)
+                origenes.add(vuelo.origen.toString())
+            if(destinos.find {it -> it == vuelo.destino.toString()}==null)
+                destinos.add(vuelo.destino.toString())
+        }
+
+        val adapter_origen: ArrayAdapter<String> = ArrayAdapter<String>(context,android.R.layout.simple_dropdown_item_1line, origenes)
+        val adapter_destino: ArrayAdapter<String> = ArrayAdapter<String>(context,android.R.layout.simple_dropdown_item_1line, destinos)
+
+        val origen: MultiAutoCompleteTextView = binding.multiOrigen
+        val destino: MultiAutoCompleteTextView = binding.multiDestino
+
+        origen.setAdapter(adapter_origen)
+        destino.setAdapter(adapter_destino)
+
+        origen.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        destino.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
     }
 
 }

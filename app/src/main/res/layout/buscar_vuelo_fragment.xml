@@ -32,6 +32,7 @@
                 android:id="@+id/text_origen">
 
                 <MultiAutoCompleteTextView
+                    android:id="@+id/multi_origen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Origen"
@@ -43,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/text_destino">
                 <MultiAutoCompleteTextView
+                    android:id="@+id/multi_destino"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Destino"
