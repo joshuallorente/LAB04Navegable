@@ -1,5 +1,8 @@
 package est.una.ac.cr.nonavegable.model
 
+import android.app.Activity
+import android.view.View
+import androidx.fragment.app.FragmentActivity
 import est.una.ac.cr.nonavegable.model.entities.*
 
 class Model {

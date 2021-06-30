@@ -12,17 +12,20 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.controllers.ListaElementosVueloAdapter
 import est.una.ac.cr.nonavegable.controllers.ListaElementosVueloAdapterRegreso
 import est.una.ac.cr.nonavegable.databinding.VuelosIdaFragmentBinding
 import est.una.ac.cr.nonavegable.databinding.VuelosRegresoFragmentBinding
-import est.una.ac.cr.nonavegable.model.Model
+import est.una.ac.cr.nonavegable.model.*
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
 import est.una.ac.cr.nonavegable.view.ui.checkout.CheckOutFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaViewModel
 import java.io.Serializable
+import java.lang.IllegalArgumentException
 
 class VuelosRegresoFragment : Fragment() {
 
@@ -40,6 +43,13 @@ class VuelosRegresoFragment : Fragment() {
     private var _binding: VuelosRegresoFragmentBinding?=null
     private  val binding get() = _binding!!
     private lateinit var adaptador: ListaElementosVueloAdapterRegreso
+    var task:VuelosRegresoAsyncTasks?=null
+
+    enum class MethodRequest(val meth:Int){
+        GET(1),
+        POST(2)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,6 +85,14 @@ class VuelosRegresoFragment : Fragment() {
         recycle.adapter = adaptador
     }
 
+    fun ejecutarTarea(method:Int,service:Int,params:String?=null){
+        if(task?.status== Constant.Status.RUNNING){
+            task?.cancel(true)
+        }
+        task = VuelosRegresoAsyncTasks(viewModel, method, service, params)
+        task?.execute()
+    }
+
     fun jumpFragment(context:Context){
         var fragment : CheckOutFragment = CheckOutFragment()
 
@@ -100,8 +118,52 @@ class VuelosRegresoFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(VuelosRegresoViewModel::class.java)
-        // TODO: Use the ViewModel
+        //viewModel = ViewModelProvider(this).get(VuelosRegresoViewModel::class.java)
+        var filtro:Vuelo=Vuelo()
+        filtro.origen=this.arguments?.get("Destino")as String
+        filtro.destino=this.arguments?.get("Origen")as String
+        filtro.fecha_despegue=this.arguments?.get("Fecha_Partida") as String
+        var gson=Gson()
+        var obj = gson.toJson(filtro)
+        ejecutarTarea(MethodRequest.GET.meth,3,obj)
+    }
+
+    class VuelosRegresoAsyncTasks(private var viewModel: VuelosRegresoViewModel,
+                                  private var method:Int,
+                                  private var serv: Int,
+                                  private var parametros: String?=null
+    ): CoroutinesAsyncTask<Int, Int, String>("Vuelos Regreso Async"){
+
+        enum class URLS(val service:String) {
+            ENLISTAR("http://201.200.0.31/LAB001BACKEND/services/Vuelo"),
+            ELIMINAR("")
+        }
+
+        override fun doInBackground(vararg params: Int?): String {
+            when(method){
+                1 -> when(serv){
+                    1-> return httpRequestGet(VuelosIdaFragment.vuelosIdaAsyncTasks.URLS.ENLISTAR.service)
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                2 -> when(serv){
+                    3-> return httpRequestPost(VuelosIdaFragment.vuelosIdaAsyncTasks.URLS.ENLISTAR.service,parametros!!)
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                else -> throw IllegalArgumentException("El método de petición no existe.")
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            var gson: Gson = Gson()
+            when(serv){
+                3->{
+                    var sType=object : TypeToken<List<Vuelo>>(){}.type
+                    var data=gson.fromJson<List<Vuelo>>(result,sType)
+                    viewModel.listVuelosRegreso.value=data
+                }
+            }
+        }
+
     }
 
 }

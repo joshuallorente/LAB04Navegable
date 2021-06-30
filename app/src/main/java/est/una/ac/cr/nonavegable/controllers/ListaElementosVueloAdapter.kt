@@ -48,6 +48,7 @@ class ListaElementosVueloAdapter(
 
     fun setItems(items: List<Vuelo>) {
         mData = items
+        this.notifyDataSetChanged()
     }
 
     inner class ViewHolder internal constructor(itemView: View) :

@@ -12,5 +12,9 @@
             android:id="@+id/nav_check_in_vuelo"
             android:icon="@drawable/ic_baseline_search"
             android:title="Check-In" />
+        <item
+            android:id="@+id/nav_test"
+            android:icon="@drawable/ic_baseline_search"
+            android:title="Test" />
     </group>
 </menu>

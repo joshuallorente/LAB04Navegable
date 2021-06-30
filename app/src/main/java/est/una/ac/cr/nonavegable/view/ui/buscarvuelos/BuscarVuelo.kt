@@ -90,7 +90,9 @@ class BuscarVuelo : Fragment() {
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
                     { view, year, monthOfYear, dayOfMonth ->
-                        fechPartida.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        var month= if((monthOfYear+1)<9) "0"+(monthOfYear+1) else ""+(monthOfYear+1)
+                        var day= if((dayOfMonth)<9) "0"+(dayOfMonth) else ""+(dayOfMonth)
+                        fechPartida.editText?.setText("$year-" + month + "-"+day)
                         viewModel.setFechPart(fechPartida.editText?.text.toString())},
                     year,
                     month,
@@ -107,7 +109,9 @@ class BuscarVuelo : Fragment() {
                 // date picker dialog
                 picker = DatePickerDialog(it.context,
                     { view, year, monthOfYear, dayOfMonth ->
-                        fechRegreso.editText?.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                        var month= if((monthOfYear+1)<9) "0"+(monthOfYear+1) else ""+(monthOfYear+1)
+                        var day= if((dayOfMonth)<9) "0"+(dayOfMonth) else ""+(dayOfMonth)
+                        fechRegreso.editText?.setText("$year-" + month + "-"+day)
                         viewModel.setfechRegreso(fechRegreso.editText?.text.toString())},
                     year,
                     month,

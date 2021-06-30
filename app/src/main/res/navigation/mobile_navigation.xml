@@ -16,5 +16,10 @@
         android:name="est.una.ac.cr.nonavegable.view.ui.checkInVuelo.CheckInVueloFragment"
         android:label="Check-In"
         tools:layout="@layout/check_in_vuelo_fragment" />
+    <fragment
+        android:id="@+id/nav_test"
+        android:name="est.una.ac.cr.nonavegable.view.ui.test.TestFragment"
+        android:label="Test"
+        tools:layout="@layout/test_fragment" />
 
 </navigation>
