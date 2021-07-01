@@ -13,9 +13,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.databinding.CheckOutFragmentBinding
-import est.una.ac.cr.nonavegable.model.Model
+import est.una.ac.cr.nonavegable.model.*
 import est.una.ac.cr.nonavegable.model.entities.Reserva
 import est.una.ac.cr.nonavegable.model.entities.Tiquete
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
@@ -32,6 +33,12 @@ class CheckOutFragment : Fragment() {
 
     private var _binding: CheckOutFragmentBinding?=null
     private val binding get()=_binding!!
+
+    enum class MethodRequest(val meth:Int){
+        GET(1),
+        POST(2)
+    }
+    var task: checkOutAsyncTasks?=null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -92,7 +99,26 @@ class CheckOutFragment : Fragment() {
         boton.setOnClickListener(View.OnClickListener {
             Toast.makeText(root.context,"Compra Realizada",Toast.LENGTH_LONG).show()
 
-            if(!argument?.getBoolean("SoloIda") as Boolean)
+            var gson= Gson()
+            ida = argument.getSerializable("VueloIda") as Vuelo
+
+
+            var filtro : Reserva = Reserva()
+            filtro.user_name="joshua"
+            filtro.cantidad=argument?.getInt("Cantidad")
+            filtro.vuelo1 = ida.id
+
+            var obj : String
+
+            if(!argument?.getBoolean("SoloIda") as Boolean) {
+                regreso = argument.getSerializable("VueloRegreso") as Vuelo
+                filtro.vuelo2 = regreso.id
+                obj = gson.toJson(filtro)
+                ejecutarTarea(MethodRequest.POST.meth, 3, obj)
+            }else {
+                obj = gson.toJson(filtro)
+                ejecutarTarea(MethodRequest.POST.meth, 3, obj)
+            }
 
             var p = parentFragmentManager
             for(i in 1..p.backStackEntryCount){
@@ -102,6 +128,14 @@ class CheckOutFragment : Fragment() {
 
 
         return root
+    }
+
+    fun ejecutarTarea(method:Int,service:Int,params:String?=null){
+        if(task?.status== Constant.Status.RUNNING){
+            task?.cancel(true)
+        }
+        task = checkOutAsyncTasks(viewModel, method, service, params)
+        task?.execute()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -115,4 +149,42 @@ class CheckOutFragment : Fragment() {
         _binding = null
     }
 
+    class checkOutAsyncTasks(private var viewModel: CheckOutViewModel,
+                             private var method:Int,
+                             private var serv: Int,
+                             private var parametros: String?=null
+    ): CoroutinesAsyncTask<Int, Int, String>("Vuelos Ida Async"){
+
+        enum class URLS(val service:String) {
+            CHECKOUT("http://201.200.0.31/LAB001BACKEND/services/Tiquete/CheckOut"),
+            CHECKOUTSOLOIDA("http://201.200.0.31/LAB001BACKEND/services/CheckOutSoloIda")
+        }
+
+
+        override fun doInBackground(vararg params: Int?): String {
+            when(method){
+                1 -> when(serv){
+                    1-> return httpRequestGet(URLS.CHECKOUTSOLOIDA.service)
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                2 -> when(serv){
+                    3-> return httpRequestPost(URLS.CHECKOUT.service,parametros!!)
+
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                else -> throw IllegalArgumentException("El método de petición no existe.")
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            var gson: Gson = Gson()
+            when(serv){
+                3->{
+                    //var sType=object : TypeToken<List<Vuelo>>(){}.type
+                    //var data=gson.fromJson<List<Vuelo>>(result,sType)
+                    //viewModel.listVuelosIda.value=data
+                }
+            }
+        }
+    }
 }

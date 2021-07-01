@@ -17,6 +17,12 @@
         android:label="Check-In"
         tools:layout="@layout/check_in_vuelo_fragment" />
     <fragment
+        android:id="@+id/nav_historial"
+        android:name="est.una.ac.cr.nonavegable.view.ui.historial.HistorialFragment"
+        android:label="Historial"
+        tools:layout="@layout/historial_fragment" />
+
+    <fragment
         android:id="@+id/nav_test"
         android:name="est.una.ac.cr.nonavegable.view.ui.test.TestFragment"
         android:label="Test"

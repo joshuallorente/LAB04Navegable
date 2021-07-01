@@ -84,7 +84,6 @@ class Model {
          correo:String?=null
     ): Usuario {
         return Usuario(user_name,contraseña,fecha_nacimento,rol,nombre,apellidos,celular,direccion,telefono,correo)
-
     }
 
 }
