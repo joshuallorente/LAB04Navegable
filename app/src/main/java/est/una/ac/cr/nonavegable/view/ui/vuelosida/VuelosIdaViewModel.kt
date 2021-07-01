@@ -7,6 +7,6 @@ import est.una.ac.cr.nonavegable.model.entities.Vuelo
 class VuelosIdaViewModel : ViewModel() {
     val listVuelosIda:MutableLiveData<List<Vuelo>> = MutableLiveData<List<Vuelo>>()
     init{
-        listVuelosIda.value = listOf()
+        listVuelosIda.value = listOf(Vuelo())
     }
 }

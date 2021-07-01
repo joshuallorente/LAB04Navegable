@@ -28,4 +28,10 @@ class Ruta(
         return formatter.format(Date(result))
     }
 
+    fun calcularHora():String{
+        var formatter:SimpleDateFormat= SimpleDateFormat("hh:mm")
+        var date1:Date=formatter.parse(tiempo)
+        return formatter.format(date1)
+    }
+
 }

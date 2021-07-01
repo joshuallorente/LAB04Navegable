@@ -66,7 +66,7 @@ class TestFragment : Fragment() {
     fun cargarLista(){
         if(task?.status==Constant.Status.RUNNING)
             task?.cancel(true)
-        task = TestAsync("https://retoolapi.dev/tl31ua/data",this.viewModel)
+        task = TestAsync("http://201.200.0.31/LAB001BACKEND/services/Avion",this.viewModel)
         task?.execute(10)
     }
 

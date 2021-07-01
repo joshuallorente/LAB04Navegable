@@ -65,8 +65,9 @@ class VuelosIdaFragment : Fragment() {
         recycle.layoutManager=LinearLayoutManager(recycle.context)
         recycle.setHasFixedSize(true)
         val root:View = binding.root
-        adaptador=ListaElementosVueloAdapter(listOf<Vuelo>(),inflater,root.context)
+        adaptador=ListaElementosVueloAdapter(listOf(),inflater,root.context)
         viewModel.listVuelosIda.observe(this.viewLifecycleOwner, Observer {
+            it
             adaptador.setItems(it)
         })
         recycle.adapter=adaptador
@@ -83,10 +84,10 @@ class VuelosIdaFragment : Fragment() {
         var filtro:Vuelo = Vuelo()
         filtro.origen=this.arguments?.get("Origen")as String
         filtro.destino=this.arguments?.get("Destino")as String
-        filtro.fecha_despegue=this.arguments?.get("Fecha_Partida") as String
+        filtro.fecha_despegue=this.arguments?.get("Fecha_partida") as String
         var gson=Gson()
         var obj = gson.toJson(filtro)
-        ejecutarTarea(MethodRequest.GET.meth,3,obj)
+        ejecutarTarea(MethodRequest.POST.meth,3,obj)
     }
 
     /*private fun getListOfVuelos(
@@ -119,6 +120,8 @@ class VuelosIdaFragment : Fragment() {
         b.putBoolean("SoloIda",soloIda)
         b.putSerializable("VueloIda",seleccionado)
         b.putInt("Cantidad",argument.getInt("Cantidad"))
+        if(!soloIda)
+            b.putString("Fecha_partida",argument.getString("Fecha_regreso"));
         fragment.arguments=b
 
         var fragmenmanager: FragmentManager? = parentFragmentManager

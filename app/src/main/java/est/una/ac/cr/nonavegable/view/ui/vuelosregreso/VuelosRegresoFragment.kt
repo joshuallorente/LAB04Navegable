@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -61,10 +62,15 @@ class VuelosRegresoFragment : Fragment() {
         recycle=binding.recyclerVuelosRegreso
         recycle.layoutManager= LinearLayoutManager(recycle.context)
         recycle.setHasFixedSize(true)
-        var adapter:ListaElementosVueloAdapter
         val root:View = binding.root
 
-        getListOfVuelos(inflater,root.context,recycle)
+        adaptador= ListaElementosVueloAdapterRegreso(listOf(),inflater,root.context)
+
+        viewModel.listVuelosRegreso.observe(this.viewLifecycleOwner, Observer {
+            adaptador.setItems(it)
+        })
+
+        recycle.adapter=adaptador
 
         binding.buttonSeleccionarRegreso.setOnClickListener(View.OnClickListener {
             jumpFragment(root.context)
@@ -120,12 +126,14 @@ class VuelosRegresoFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(VuelosRegresoViewModel::class.java)
         var filtro:Vuelo=Vuelo()
-        filtro.origen=this.arguments?.get("Destino")as String
-        filtro.destino=this.arguments?.get("Origen")as String
-        filtro.fecha_despegue=this.arguments?.get("Fecha_Partida") as String
+        var vuelo = Vuelo()
+        vuelo = this.arguments?.getSerializable("VueloIda") as Vuelo
+        filtro.origen= vuelo.destino
+        filtro.destino=vuelo.origen
+        filtro.fecha_despegue=this.arguments?.getString("Fecha_partida") as String
         var gson=Gson()
         var obj = gson.toJson(filtro)
-        ejecutarTarea(MethodRequest.GET.meth,3,obj)
+        ejecutarTarea(MethodRequest.POST.meth,3,obj)
     }
 
     class VuelosRegresoAsyncTasks(private var viewModel: VuelosRegresoViewModel,

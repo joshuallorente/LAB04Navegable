@@ -139,7 +139,7 @@ class BuscarVuelo : Fragment() {
             b.putString("Destino",destino.editText?.text.toString())
             b.putString("Fecha_partida",fechPartida.editText?.text.toString())
             b.putInt("Cantidad",cantidadAsientos.editText?.text.toString().toInt())
-            if(soloIda.isActivated)
+            if(!soloIda.isActivated)
                 b.putString("Fecha_regreso",fechRegreso.editText?.text.toString())
 
 

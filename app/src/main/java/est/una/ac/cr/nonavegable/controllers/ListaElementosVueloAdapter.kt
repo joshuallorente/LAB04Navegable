@@ -65,8 +65,8 @@ class ListaElementosVueloAdapter(
 
         fun bindData(item: Vuelo?) {
             this.vuelo_id.text="Vuelo Id: ${item?.id}"
-            this.vuelo_fecha.text="Fecha: ${item?.fecha_despegue}"
-            this.vuelo_hora_partida.text="${item?.ruta?.tiempo}"
+            this.vuelo_fecha.text="Fecha: ${item?.calcularFechaDespegue()}"
+            this.vuelo_hora_partida.text="${item?.ruta?.calcularHora()}"
             this.vuelo_hora_llegada.text="${item?.ruta?.calcularHoraLlegada()}"
             this.vuelo_ruta.text="Ruta: ${item?.origen} - ${item?.destino}"
             this.vuelo_precio.text="$ ${item?.ruta?.precio}"

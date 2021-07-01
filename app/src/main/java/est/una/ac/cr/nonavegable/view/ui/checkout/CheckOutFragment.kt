@@ -92,10 +92,7 @@ class CheckOutFragment : Fragment() {
         boton.setOnClickListener(View.OnClickListener {
             Toast.makeText(root.context,"Compra Realizada",Toast.LENGTH_LONG).show()
 
-            Model.instance.listaReserva.add(Reserva(3,"joshua.llor"))
-            Model.instance.listaTiquete.add(Tiquete(3,ida.id,"joshua.llor",3))
             if(!argument?.getBoolean("SoloIda") as Boolean)
-                Model.instance.listaTiquete.add(Tiquete(4,regreso.id,"joshua.llor",3))
 
             var p = parentFragmentManager
             for(i in 1..p.backStackEntryCount){

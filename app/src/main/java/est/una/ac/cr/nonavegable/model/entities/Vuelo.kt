@@ -1,6 +1,8 @@
 package est.una.ac.cr.nonavegable.model.entities
 
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Vuelo(
     var id: Int = -1,
@@ -17,5 +19,10 @@ class Vuelo(
         return "Vuelo(id=$id, origen=$origen, destino=$destino, descuento=$descuento, " +
                 "cantidad_pasajeros=$cantidad_pasajeros, ruta_id=$ruta_id, " +
                 "avion_id=$avion_id, ruta=$ruta)"
+    }
+
+    fun calcularFechaDespegue():String?{
+
+        return fecha_despegue?.split("T")?.get(0)
     }
 }
