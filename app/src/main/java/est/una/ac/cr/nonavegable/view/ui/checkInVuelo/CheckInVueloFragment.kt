@@ -12,14 +12,13 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import est.una.ac.cr.nonavegable.databinding.CheckInVueloFragmentBinding
-import est.una.ac.cr.nonavegable.model.CoroutinesAsyncTask
+import est.una.ac.cr.nonavegable.model.*
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
-import est.una.ac.cr.nonavegable.model.httpRequestGet
-import est.una.ac.cr.nonavegable.model.httpRequestPost
 import est.una.ac.cr.nonavegable.view.ui.checkin.CheckInFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import java.lang.IllegalArgumentException
@@ -40,8 +39,7 @@ class CheckInVueloFragment : Fragment() {
     private var task:CheckInVueloAsyncTask?=null
 
     enum class URLS(val service:String) {
-        ORIGENES("http://201.200.0.31/LAB001BACKEND/services/Vuelo/Origen"),
-        DESTINOS("http://201.200.0.31/LAB001BACKEND/services/Vuelo/Destino")
+        CHECK("http://201.200.0.31/LAB001BACKEND/services/Tiquete/Listar")
     }
     enum class MethodRequest(val meth:Int){
         GET(1),
@@ -59,12 +57,20 @@ class CheckInVueloFragment : Fragment() {
 
         val btn_buscar = binding.btnBuscarCheckin
         spinner_vuelos = binding.spinnerVuelos
+        viewModel.listVuelo.observe(this.viewLifecycleOwner, Observer {
+            rutasArr = viewModel.getRutasArrayList()
+        })
         cargarVuelos(this.requireContext())
 
         btn_buscar.setOnClickListener(View.OnClickListener {
             var checkInFragment: CheckInFragment = CheckInFragment()
             var fragmenmanager: FragmentManager? = parentFragmentManager
             var fragTransaction: FragmentTransaction?=fragmenmanager?.beginTransaction()
+            var stringId = spinner_vuelos.selectedItem as String
+            var spliterator = stringId.split(" ").toTypedArray()
+            var bundle=Bundle()
+            bundle.putSerializable("Vuelo",viewModel.getVueloByID(spliterator[0]))
+            checkInFragment.arguments=bundle
 
             fragTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             fragTransaction?.replace(est.una.ac.cr.nonavegable.R.id.nav_host_fragment_content_main,checkInFragment)
@@ -77,8 +83,7 @@ class CheckInVueloFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(CheckInVueloViewModel::class.java)
-
-        // TODO: Use the ViewModel
+        ejecutarTarea(viewModel,MethodRequest.POST.meth,3,"{\"user_name\":\"${Model.instance.user_name}\"}")
     }
 
     override fun onDestroy() {
@@ -92,27 +97,31 @@ class CheckInVueloFragment : Fragment() {
         spinner_vuelos.setAdapter(rutasAdapter)
     }
 
+    fun ejecutarTarea(viewModel: CheckInVueloViewModel,method: Int,service: Int,params:String){
+        if(task?.status== Constant.Status.RUNNING){
+            task?.cancel(true)
+        }
+        task = CheckInVueloAsyncTask(viewModel,method,service,this.requireContext(),params)
+        task?.execute()
+    }
 
-    class CheckInVueloAsyncTask(
+    inner class CheckInVueloAsyncTask(
         private val viewModel: CheckInVueloViewModel,
         private var method:Int,
         private var serv:Int,
+        private var context:Context,
         private var parametros:String?=null
     ):CoroutinesAsyncTask<Int,Int,String>("CheckInVueloAsyncTask"){
         var gson= Gson()
-        enum class URLS(val service:String) {
-            ENLISTAR("http://201.200.0.31/LAB001BACKEND/services/Tiquiete/Listar"),
-            ELIMINAR("")
-        }
 
         override fun doInBackground(vararg params: Int?): String {
             when(method){
                 1 -> when(serv){
-                    1-> return httpRequestGet(URLS.ENLISTAR.service)
+                    1-> return httpRequestGet(URLS.CHECK.service)
                     else -> throw IllegalArgumentException("El Servicio no existe")
                 }
                 2 -> when(serv){
-                    3-> return httpRequestPost(URLS.ENLISTAR.service,parametros!!)
+                    3-> return httpRequestPost(URLS.CHECK.service,parametros!!)
                     else -> throw IllegalArgumentException("El Servicio no existe")
                 }
                 else -> throw IllegalArgumentException("El método de petición no existe.")
@@ -126,6 +135,7 @@ class CheckInVueloFragment : Fragment() {
                     var sType=object : TypeToken<List<Vuelo>>(){}.type
                     var data=gson.fromJson<List<Vuelo>>(result,sType)
                     viewModel.listVuelo.value=data
+                    cargarVuelos(context)
                 }
             }
         }

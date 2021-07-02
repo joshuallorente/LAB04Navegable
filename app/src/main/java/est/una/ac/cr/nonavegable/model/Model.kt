@@ -23,7 +23,12 @@ class Model {
     var listaTiquete: ArrayList<Tiquete> = ArrayList()
     var listaReserva: ArrayList<Reserva> = ArrayList()
     var listaAsiento: ArrayList<Asiento> = ArrayList()
+    var listaCantidadAsientos:ArrayList<Int> = ArrayList()
+    var user_name:String = ""
 
+    init {
+        listaCantidadAsientos= arrayListOf(1,2,3,4,5,6,7,8,9,10)
+    }
     fun init(){
         listaUsuario.add(Usuario("joshua.llor","1234","12-02-1999",0,
             "Joshua","Llorente","60928969","San Juan de Dios","22506638",

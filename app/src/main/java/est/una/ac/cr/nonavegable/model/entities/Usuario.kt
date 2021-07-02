@@ -5,7 +5,7 @@ import java.io.Serializable
 class Usuario(
     var user_name:String?=null,
     var contraseña:String?=null,
-    var fecha_nacimento:String?=null,
+    var fecha_nacimiento:String?=null,
     var rol:Int=-1,
     var nombre: String?=null,
     var apellidos: String?=null,
@@ -16,7 +16,7 @@ class Usuario(
 ):Serializable {
     override fun toString(): String {
         return "Usuario(user_name=$user_name, contraseña=$contraseña, " +
-                "fecha_nacimento=$fecha_nacimento, rol=$rol, nombre=$nombre, " +
+                "fecha_nacimento=$fecha_nacimiento, rol=$rol, nombre=$nombre, " +
                 "apellidos=$apellidos, celular=$celular, direccion=$direccion, " +
                 "telefono=$telefono, correo=$correo)"
     }

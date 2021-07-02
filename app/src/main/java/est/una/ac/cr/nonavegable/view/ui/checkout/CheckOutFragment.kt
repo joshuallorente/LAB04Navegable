@@ -104,7 +104,7 @@ class CheckOutFragment : Fragment() {
 
 
             var filtro : Reserva = Reserva()
-            filtro.user_name="joshua"
+            filtro.user_name=Model.instance.user_name
             filtro.cantidad=argument?.getInt("Cantidad")
             filtro.vuelo1 = ida.id
 
@@ -117,7 +117,7 @@ class CheckOutFragment : Fragment() {
                 ejecutarTarea(MethodRequest.POST.meth, 3, obj)
             }else {
                 obj = gson.toJson(filtro)
-                ejecutarTarea(MethodRequest.POST.meth, 3, obj)
+                ejecutarTarea(MethodRequest.POST.meth, 4, obj)
             }
 
             var p = parentFragmentManager
@@ -140,7 +140,7 @@ class CheckOutFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CheckOutViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(CheckOutViewModel::class.java)
         // TODO: Use the ViewModel
     }
 
@@ -157,7 +157,7 @@ class CheckOutFragment : Fragment() {
 
         enum class URLS(val service:String) {
             CHECKOUT("http://201.200.0.31/LAB001BACKEND/services/Tiquete/CheckOut"),
-            CHECKOUTSOLOIDA("http://201.200.0.31/LAB001BACKEND/services/CheckOutSoloIda")
+            CHECKOUTSOLOIDA("http://201.200.0.31/LAB001BACKEND/services/Tiquete/CheckOutSoloIda")
         }
 
 
@@ -169,6 +169,7 @@ class CheckOutFragment : Fragment() {
                 }
                 2 -> when(serv){
                     3-> return httpRequestPost(URLS.CHECKOUT.service,parametros!!)
+                    4-> return httpRequestPost(URLS.CHECKOUTSOLOIDA.service,parametros!!)
 
                     else -> throw IllegalArgumentException("El Servicio no existe")
                 }
@@ -183,6 +184,9 @@ class CheckOutFragment : Fragment() {
                     //var sType=object : TypeToken<List<Vuelo>>(){}.type
                     //var data=gson.fromJson<List<Vuelo>>(result,sType)
                     //viewModel.listVuelosIda.value=data
+                }
+                4->{
+
                 }
             }
         }

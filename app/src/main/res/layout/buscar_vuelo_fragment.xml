@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.ui.buscarvuelos.BuscarVuelo"
     android:orientation="vertical"
     android:gravity="center">
@@ -28,6 +29,7 @@
 
             <Spinner
                 android:id="@+id/multi_origen"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog">
@@ -65,6 +67,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:boxBackgroundColor="#00FFFFFF"
                 android:id="@+id/text_fech_partida">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -76,6 +79,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:boxBackgroundColor="#00FFFFFF"
                 android:id="@+id/text_fech_regreso">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -84,7 +88,7 @@
                     android:focusableInTouchMode="false"
                     android:inputType="none"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
+            <!--<com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/text_cantidad_asientos">
@@ -93,7 +97,13 @@
                     android:layout_height="wrap_content"
                     android:hint="Cantidad de asientos disponibles"
                     android:inputType="number"/>
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>-->
+            <Spinner
+                android:id="@+id/text_catidad_asientos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dialog">
+            </Spinner>
             <CheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

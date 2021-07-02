@@ -17,4 +17,13 @@ class CheckInVueloViewModel : ViewModel() {
         }
         return result
     }
+
+    fun getVueloByID(id:String):Vuelo?{
+        for(v in listVuelo.value!!){
+            if(v.id == id.toInt())
+                return v;
+        }
+        return null;
+    }
+
 }

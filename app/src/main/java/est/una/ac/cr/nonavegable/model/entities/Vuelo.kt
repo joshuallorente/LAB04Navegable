@@ -28,6 +28,6 @@ class Vuelo(
     }
 
     fun getStringruta():String{
-        return "$origen-$destino"
+        return "$id $origen-$destino"
     }
 }

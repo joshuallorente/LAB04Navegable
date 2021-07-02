@@ -15,11 +15,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import est.una.ac.cr.nonavegable.controllers.ListaHistorialAdapter
 import est.una.ac.cr.nonavegable.databinding.HistorialFragmentBinding
-import est.una.ac.cr.nonavegable.model.Constant
-import est.una.ac.cr.nonavegable.model.CoroutinesAsyncTask
+import est.una.ac.cr.nonavegable.model.*
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
-import est.una.ac.cr.nonavegable.model.httpRequestGet
-import est.una.ac.cr.nonavegable.model.httpRequestPost
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import okhttp3.*
 import java.lang.IllegalArgumentException
@@ -70,7 +67,7 @@ class HistorialFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(HistorialViewModel::class.java)
         // TODO: Use the ViewMode
-        ejecutarTarea(viewModel,MethodRequest.POST.meth,3,"{\"user_name\":\"joshua\"}")
+        ejecutarTarea(viewModel,MethodRequest.POST.meth,3,"{\"user_name\":\"${Model.instance.user_name}\"}")
         inicializarWebSocket()
     }
 

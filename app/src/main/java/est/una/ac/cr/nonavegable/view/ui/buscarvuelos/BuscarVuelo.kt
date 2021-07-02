@@ -83,12 +83,14 @@ class BuscarVuelo : Fragment() {
         fechPartida.editText?.setText(viewModel.fechaPart.value)
         val fechRegreso:TextInputLayout = binding.textFechRegreso
         fechRegreso.editText?.setText(viewModel.fechaReg.value)
-        val cantidadAsientos:TextInputLayout= binding.textCantidadAsientos
+        val cantidadAsientos:Spinner= binding.textCatidadAsientos
         /*cantidadAsientos.editText?.setText(viewModel.cantidadPas.value.toString())
         cantidadAsientos.editText?.setOnKeyListener { v, keyCode, event ->
             viewModel.setCantidadPas(cantidadAsientos.editText?.text.toString())
             true
         }*/
+        var cantidadAsAdapter=ArrayAdapter<Int>(root.context,android.R.layout.simple_dropdown_item_1line,Model.instance.listaCantidadAsientos)
+        cantidadAsientos.adapter = cantidadAsAdapter
         val soloIda:CheckBox=binding.checkSoloIda
         soloIda.isActivated= viewModel.soloIda.value == true
         val buscar:Button=binding.btnBuscar
@@ -152,7 +154,7 @@ class BuscarVuelo : Fragment() {
             b.putString("Origen",origen.selectedItem.toString())
             b.putString("Destino",destino.selectedItem.toString())
             b.putString("Fecha_partida",fechPartida.editText?.text.toString())
-            b.putInt("Cantidad",cantidadAsientos.editText?.text.toString().toInt())
+            b.putInt("Cantidad",cantidadAsientos.selectedItem.toString().toInt())
             if(!soloIda.isActivated)
                 b.putString("Fecha_regreso",fechRegreso.editText?.text.toString())
 
