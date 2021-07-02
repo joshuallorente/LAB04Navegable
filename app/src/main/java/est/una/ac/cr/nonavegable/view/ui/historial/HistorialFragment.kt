@@ -15,8 +15,14 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import est.una.ac.cr.nonavegable.controllers.ListaHistorialAdapter
 import est.una.ac.cr.nonavegable.databinding.HistorialFragmentBinding
+import est.una.ac.cr.nonavegable.model.Constant
+import est.una.ac.cr.nonavegable.model.CoroutinesAsyncTask
 import est.una.ac.cr.nonavegable.model.entities.Vuelo
+import est.una.ac.cr.nonavegable.model.httpRequestGet
+import est.una.ac.cr.nonavegable.model.httpRequestPost
+import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import okhttp3.*
+import java.lang.IllegalArgumentException
 import java.util.concurrent.Executors
 
 
@@ -26,13 +32,19 @@ class HistorialFragment : Fragment() {
         fun newInstance() = HistorialFragment()
     }
 
+    enum class MethodRequest(val meth:Int){
+        GET(1),
+        POST(2)
+    }
+
     private lateinit var viewModel: HistorialViewModel
     private lateinit var adaptador: ListaHistorialAdapter
     private  var _binding:HistorialFragmentBinding?=null
-    private val wsPath:String = "ws://192.168.178.24:8080/examples/websocket/chat"
+    private val wsPath:String = "ws://201.200.0.31/LAB001BACKEND/websockets/vuelos"
     //private val wsPath:String = "ws://echo.websocket.org"
     private lateinit var socket:WebSocket
     private lateinit var recycler:RecyclerView
+    private var task:HistorialFragmentAsyncTask?=null
     private  val binding get() = _binding!!
     var client = OkHttpClient()
     var request = Request.Builder().url(this.wsPath).build()
@@ -58,11 +70,19 @@ class HistorialFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(HistorialViewModel::class.java)
         // TODO: Use the ViewMode
+        ejecutarTarea(viewModel,MethodRequest.POST.meth,3,"{\"user_name\":\"joshua\"}")
         inicializarWebSocket()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding=null
+        socket.close(1000,"Exit on Destroy")
     }
 
     fun inicializarWebSocket(){
         socket=client.newWebSocket(request, object: WebSocketListener(){
+            var gson=Gson()
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 super.onOpen(webSocket, response)
                 this@HistorialFragment.activity?.runOnUiThread(Runnable {
@@ -71,52 +91,61 @@ class HistorialFragment : Fragment() {
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
-                Log.println(Log.ERROR,"Se obtuvo","Pasó pora acá")
-                Log.println(Log.ERROR,"Se obtuvo",text)
+                if(text=="Actualizar"){
+                    var sType=object :TypeToken<List<Vuelo>>(){}.type
+                    var data=gson.fromJson<List<Vuelo>>(text,sType)
+                    viewModel.listHistorial.value=data
+                }
             }
         })
         socket.send("No se si llega")
         //this.socket =client.newWebSocket(request,SocketListener("pepe",this.binding.root))
     }
 
+    fun ejecutarTarea(viewModel: HistorialViewModel,method: Int,service:Int,params:String?=null){
+        if(task?.status== Constant.Status.RUNNING){
+            task?.cancel(true)
+        }
+        task = HistorialFragmentAsyncTask(viewModel, method, service, params)
+        task?.execute()
+    }
 
-
-
-    /*private inner class SocketListener(
-        private var user:String,
-        private var view:View
-    ) : WebSocketListener(){
-        var gson:Gson = Gson()
-
-        override fun onOpen(webSocket: WebSocket, response: Response) {
-            super.onOpen(webSocket, response)
-               this@HistorialFragment.activity?.runOnUiThread(Runnable {
-                   // Toast.makeText(view.context,"Conexión establecida.",Toast.LENGTH_SHORT)
-                    var parametros = gson.toJson(object {var usua:String=user})
-                    this@HistorialFragment.socket.send("Pepardo")
-            })
-            /*Executors.newSingleThreadExecutor().execute(Runnable {
-                //Toast.makeText(view.context,"Conexión establecida.",Toast.LENGTH_SHORT)
-                var parametros = gson.toJson(object {var usua:String=user})
-                this@HistorialFragment.socket.send(parametros)
-            })*/
+    class HistorialFragmentAsyncTask(
+        private var viewModel: HistorialViewModel,
+        private var method:Int,
+        private var serv:Int,
+        private var parametros:String?=null
+    ):CoroutinesAsyncTask<Int,Int,String>("Historial Fragment"){
+        enum class URLS(val service:String) {
+            ENLISTAR("http://201.200.0.31/LAB001BACKEND/services/Tiquete"),
+            ELIMINAR("")
+        }
+        override fun doInBackground(vararg params: Int?): String {
+            when(method){
+                1 -> when(serv){
+                    1-> return httpRequestGet(URLS.ENLISTAR.service)
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                2 -> when(serv){
+                    3-> return httpRequestPost(URLS.ENLISTAR.service,parametros!!)
+                    else -> throw IllegalArgumentException("El Servicio no existe")
+                }
+                else -> throw IllegalArgumentException("El método de petición no existe.")
+            }
         }
 
-        override fun onMessage(webSocket: WebSocket, text: String) {
-            super.onMessage(webSocket, text)
-            var sType=object :TypeToken<List<Vuelo>>(){}.type
-            var data=gson.fromJson<List<Vuelo>>(text,sType)
-            Log.println(Log.ERROR,"Se obtuvo",text)
-            //this@HistorialFragment.viewModel.listHistorial.value=data
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            var gson=Gson()
+            when(serv){
+                3->{
+                    var sType=object :TypeToken<List<Vuelo>>(){}.type
+                    var data=gson.fromJson<List<Vuelo>>(result,sType)
+                    viewModel.listHistorial.value=data
+                }
+            }
         }
 
-        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            this@HistorialFragment.socket.close(1000,null)
-            Log.println(Log.ERROR,"Se obtuvo","Pasó pora acá")
-        }
-
-
-    }*/
-
+    }
 
 }

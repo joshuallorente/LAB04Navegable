@@ -17,16 +17,24 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <androidx.recyclerview.widget.RecyclerView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/recycler_vuelos_regreso"/>
+            android:orientation="vertical">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recycler_vuelos_regreso"/>
+            <Button
+                android:id="@+id/button_seleccionar_regreso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar" />
+        </LinearLayout>
+
+
     </ScrollView>
 
-    <Button
-        android:id="@+id/button_seleccionar_regreso"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Seleccionar" />
+
 
 </LinearLayout>

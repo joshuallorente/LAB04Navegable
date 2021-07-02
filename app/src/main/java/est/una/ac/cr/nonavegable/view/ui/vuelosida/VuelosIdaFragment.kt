@@ -28,6 +28,7 @@ import est.una.ac.cr.nonavegable.view.ui.buscarvuelos.BuscarVuelo
 import est.una.ac.cr.nonavegable.view.ui.checkin.CheckInFragment
 import est.una.ac.cr.nonavegable.view.ui.checkout.CheckOutFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosregreso.VuelosRegresoFragment
+import okhttp3.*
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
@@ -53,6 +54,12 @@ class VuelosIdaFragment : Fragment() {
     private  val binding get() = _binding!!
     private lateinit var adaptador: ListaElementosVueloAdapter
     var task:vuelosIdaAsyncTasks?=null
+    var wsPath:String="ws://201.200.0.31/LAB001BACKEND/websockets/vuelos"
+    var client = OkHttpClient()
+    var request = Request.Builder().url(this.wsPath).build()
+    private lateinit var socket:WebSocket
+    private lateinit var filtro:Vuelo
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,13 +88,14 @@ class VuelosIdaFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(VuelosIdaViewModel::class.java)
-        var filtro:Vuelo = Vuelo()
+        filtro = Vuelo()
         filtro.origen=this.arguments?.get("Origen")as String
         filtro.destino=this.arguments?.get("Destino")as String
         filtro.fecha_despegue=this.arguments?.get("Fecha_partida") as String
         var gson=Gson()
         var obj = gson.toJson(filtro)
         ejecutarTarea(MethodRequest.POST.meth,3,obj)
+        inicializarWebSocket()
     }
 
     /*private fun getListOfVuelos(
@@ -133,9 +141,34 @@ class VuelosIdaFragment : Fragment() {
         fragTransaction?.commit()
     }
 
+    fun inicializarWebSocket(){
+        socket=client.newWebSocket(request, object: WebSocketListener(){
+            var gson:Gson=Gson()
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                super.onOpen(webSocket, response)
+                this@VuelosIdaFragment.activity?.runOnUiThread(Runnable {
+                })
+            }
+
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                super.onMessage(webSocket, text)
+                Log.println(Log.INFO,"Se obtuvo","Pasó pora acá")
+                Log.println(Log.INFO,"Se obtuvo",text)
+                if(text=="Actualizar"){
+                    var para= gson.toJson(filtro)
+                    ejecutarTarea(MethodRequest.POST.meth,3,para)
+                }
+            }
+        })
+        socket.send("Hello there")
+        //this.socket =client.newWebSocket(request,SocketListener("pepe",this.binding.root))
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         _binding=null
+        socket.close(1000,"Exit of the fragment")
     }
 
      fun ejecutarTarea(method:Int,service:Int,params:String?=null){

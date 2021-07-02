@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import est.una.ac.cr.nonavegable.model.entities.Vuelo
 import est.una.ac.cr.nonavegable.view.ui.checkout.CheckOutFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaFragment
 import est.una.ac.cr.nonavegable.view.ui.vuelosida.VuelosIdaViewModel
+import okhttp3.*
 import java.io.Serializable
 import java.lang.IllegalArgumentException
 
@@ -45,6 +47,11 @@ class VuelosRegresoFragment : Fragment() {
     private  val binding get() = _binding!!
     private lateinit var adaptador: ListaElementosVueloAdapterRegreso
     var task:VuelosRegresoAsyncTasks?=null
+    var wsPath:String="ws://201.200.0.31/LAB001BACKEND/websockets/vuelos"
+    var client = OkHttpClient()
+    var request = Request.Builder().url(this.wsPath).build()
+    private lateinit var socket: WebSocket
+    private lateinit var filtro:Vuelo
 
     enum class MethodRequest(val meth:Int){
         GET(1),
@@ -78,7 +85,51 @@ class VuelosRegresoFragment : Fragment() {
         return root
     }
 
-    private fun getListOfVuelos(
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        //viewModel = ViewModelProvider(this).get(VuelosRegresoViewModel::class.java)
+        filtro=Vuelo()
+        var vuelo = Vuelo()
+        vuelo = this.arguments?.getSerializable("VueloIda") as Vuelo
+        filtro.origen= vuelo.destino
+        filtro.destino=vuelo.origen
+        filtro.fecha_despegue=this.arguments?.getString("Fecha_partida") as String
+        var gson=Gson()
+        var obj = gson.toJson(filtro)
+        ejecutarTarea(MethodRequest.POST.meth,3,obj)
+        inicializarWebSocket()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding=null
+        socket.close(1000,"Exit from fragment")
+    }
+
+    fun inicializarWebSocket() {
+        socket = client.newWebSocket(request, object : WebSocketListener() {
+            var gson: Gson = Gson()
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                super.onOpen(webSocket, response)
+                this@VuelosRegresoFragment.activity?.runOnUiThread(Runnable {
+                })
+            }
+
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                super.onMessage(webSocket, text)
+                Log.println(Log.INFO, "Se obtuvo", "Pasó pora acá")
+                Log.println(Log.INFO, "Se obtuvo", text)
+                if (text == "Actualizar") {
+                    var para = gson.toJson(filtro)
+                    ejecutarTarea(MethodRequest.POST.meth, 3, para)
+                }
+            }
+        })
+        socket.send("Hello there")
+        //this.socket =client.newWebSocket(request,SocketListener("pepe",this.binding.root))
+    }
+
+    /*private fun getListOfVuelos(
         inflater: LayoutInflater,
         context: Context,
         recycle:RecyclerView,
@@ -89,7 +140,7 @@ class VuelosRegresoFragment : Fragment() {
         }
         adaptador = ListaElementosVueloAdapterRegreso(vuelosList,inflater,context)
         recycle.adapter = adaptador
-    }
+    }*/
 
     fun ejecutarTarea(method:Int,service:Int,params:String?=null){
         if(task?.status== Constant.Status.RUNNING){
@@ -122,19 +173,7 @@ class VuelosRegresoFragment : Fragment() {
         fragTransaction?.commit()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        //viewModel = ViewModelProvider(this).get(VuelosRegresoViewModel::class.java)
-        var filtro:Vuelo=Vuelo()
-        var vuelo = Vuelo()
-        vuelo = this.arguments?.getSerializable("VueloIda") as Vuelo
-        filtro.origen= vuelo.destino
-        filtro.destino=vuelo.origen
-        filtro.fecha_despegue=this.arguments?.getString("Fecha_partida") as String
-        var gson=Gson()
-        var obj = gson.toJson(filtro)
-        ejecutarTarea(MethodRequest.POST.meth,3,obj)
-    }
+
 
     class VuelosRegresoAsyncTasks(private var viewModel: VuelosRegresoViewModel,
                                   private var method:Int,

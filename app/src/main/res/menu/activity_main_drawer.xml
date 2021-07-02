@@ -16,9 +16,5 @@
             android:id="@+id/nav_historial"
             android:icon="@drawable/ic_baseline_history_24"
             android:title="@string/historial" />
-        <item
-            android:id="@+id/nav_test"
-            android:icon="@drawable/ic_baseline_search"
-            android:title="Test" />
     </group>
 </menu>

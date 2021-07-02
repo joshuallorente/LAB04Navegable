@@ -13,7 +13,8 @@ class Vuelo(
     var fecha_despegue:String?=null,
     var ruta_id: Int =-1,
     var avion_id:String?=null,
-    var ruta:Ruta?=null
+    var ruta:Ruta?=null,
+    var tipo_avion:TipoAvion?=null
 ):Serializable {
     override fun toString(): String {
         return "Vuelo(id=$id, origen=$origen, destino=$destino, descuento=$descuento, " +
@@ -24,5 +25,9 @@ class Vuelo(
     fun calcularFechaDespegue():String?{
 
         return fecha_despegue?.split("T")?.get(0)
+    }
+
+    fun getStringruta():String{
+        return "$origen-$destino"
     }
 }

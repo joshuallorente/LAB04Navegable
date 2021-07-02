@@ -44,6 +44,7 @@ class ListaHistorialAdapter(
         var vuelo_precio: TextView
         var tiquete: ImageView
         var flecha: ImageView
+        var asientos: TextView
 
         fun bindData(item: Vuelo?) {
             this.vuelo_id.text="Vuelo Id: ${item?.id}"
@@ -51,6 +52,7 @@ class ListaHistorialAdapter(
             this.vuelo_hora_partida.text="${item?.ruta?.calcularHora()}"
             this.vuelo_hora_llegada.text="${item?.ruta?.calcularHoraLlegada()}"
             this.vuelo_ruta.text="Ruta: ${item?.origen} - ${item?.destino}"
+            this.asientos.text="Asientos: ${item?.cantidad_pasajeros}"
             this.vuelo_precio.text="$ ${item?.ruta?.precio}"
         }
 
@@ -62,6 +64,7 @@ class ListaHistorialAdapter(
             vuelo_fecha = itemView.findViewById(R.id.card_fecha_vuelo)
             tiquete = itemView.findViewById(R.id.iconImageView)
             flecha = itemView.findViewById(R.id.iconForwardImage)
+            asientos=itemView.findViewById(R.id.card_Cantidad)
             vuelo_precio = itemView.findViewById(R.id.card_precio)
         }
     }
