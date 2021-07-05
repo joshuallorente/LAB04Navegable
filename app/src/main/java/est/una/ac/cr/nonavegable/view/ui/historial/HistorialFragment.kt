@@ -89,9 +89,7 @@ class HistorialFragment : Fragment() {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
                 if(text=="Actualizar"){
-                    var sType=object :TypeToken<List<Vuelo>>(){}.type
-                    var data=gson.fromJson<List<Vuelo>>(text,sType)
-                    viewModel.listHistorial.value=data
+                    ejecutarTarea(viewModel,MethodRequest.POST.meth,3,"{\"user_name\":\"${Model.instance.user_name}\"}")
                 }
             }
         })

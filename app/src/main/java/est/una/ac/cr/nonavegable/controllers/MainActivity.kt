@@ -2,6 +2,7 @@ package est.una.ac.cr.nonavegable.controllers
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -13,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import est.una.ac.cr.nonavegable.R
 import est.una.ac.cr.nonavegable.databinding.ActivityMainBinding
+import est.una.ac.cr.nonavegable.model.Model
 
 class MainActivity : AppCompatActivity() {
 
